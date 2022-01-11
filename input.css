@@ -1,0 +1,31 @@
+input {
+  border: none;
+  outline: none;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  margin-top: 0px;
+  height: 20px;
+  padding-left:8px;
+  width: 200px
+}
+
+
+select{
+  border: none;
+  outline: none;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  margin-top: 5px;
+  height: 20px;
+  padding-left:8px;
+  width: 200px
+
+}
+
+#submit{
+    margin-top:10px;
+}
