@@ -228,7 +228,7 @@ foreach ($result_good as $record_good) {
                     radius: 5,
                   });
 
-                  // マップにメッシュを追加          
+                  // マップにメッシュを追加(中心)      
                   var code = mesh;
                   console.log(code)
                   for(var i=0;i<4;i++){
@@ -246,7 +246,57 @@ foreach ($result_good as $record_good) {
                       }
                     });
                   }
-            
+                  // マップにメッシュを追加(南向き)      
+                  for(var i2=1;i2<3;i2++){
+                    var code = mesh-(i2*10);
+                    console.log(code)
+                    for(var i=0;i<4;i++){
+                      var loc =  meshcode2latlng.quater(code);
+                      var rectangle = new google.maps.Rectangle({
+                        strokeColor: '#ff0000',
+                        strokeWeight: 0.5,
+                        fillColor: '#ffffff00',
+                        map: map,
+                        bounds: {
+                          south: loc.south,
+                          west: loc.west,
+                          north: loc.north+0.00625,
+                          east: loc.east+0.0094
+                        }
+                      });
+                    }
+                  }
+                    // マップにメッシュを追加(西向き) 
+                    for(var i3=1;i3<3;i3++){
+                      var code = mesh-(i3);
+                      console.log(code)
+                      for(var i=0;i<4;i++){
+                        var loc =  meshcode2latlng.quater(code);
+                        var rectangle = new google.maps.Rectangle({
+                          strokeColor: '#ff0000',
+                          strokeWeight: 0.5,
+                          fillColor: '#ffffff00',
+                          map: map,
+                          bounds: {
+                            south: loc.south,
+                            west: loc.west,
+                            north: loc.north+0.0062,
+                            east: loc.east+0.009375
+                          }
+                        });
+                      }
+                    };
+
+
+
+                  
+
+
+
+
+                  
+
+
                   //悪いゴミステーションのマッピング
                   data.map(d => {
                     // マーカーをつける(悪い方)
