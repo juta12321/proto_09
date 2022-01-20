@@ -19,7 +19,7 @@ function connect_to_db(){
 function check_session_id()
 {
   if (!isset($_SESSION["session_id"]) ||$_SESSION["session_id"] != session_id()) {
-    header('Location:login.php');
+    header('Location:login_user.php');
     exit();
   } else {
     session_regenerate_id(true);

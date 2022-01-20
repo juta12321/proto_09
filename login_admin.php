@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <form action="login_act.php" method="POST">
+    <form action="login_admin_act.php" method="POST">
         <fieldset>
             <legend>管理者ログイン</legend>
             <div>

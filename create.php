@@ -1,9 +1,5 @@
 <?php
-//  var_dump($_POST);
-//  exit();
-
 // POSTデータ確認
-
 if (
   !isset($_POST['lat']) || $_POST['lat']=='' ||
   !isset($_POST['lng']) || $_POST['lng']=='' ||

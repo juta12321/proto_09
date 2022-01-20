@@ -1,6 +1,6 @@
 <?php
 
-//login_act.php
+//login_admin_act.php
 session_start();
 include("functions.php");
 
@@ -31,7 +31,7 @@ try {
 $val = $stmt->fetch(PDO::FETCH_ASSOC);
 if (!$val) {
   echo "<p>ログイン情報に誤りがあります</p>";
-  echo "<a href=login.php>ログイン</a>";
+  echo "<a href=login_admin.php>ログイン</a>";
   exit();
 
 } else {

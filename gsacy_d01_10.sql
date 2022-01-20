@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- ホスト: 127.0.0.1
--- 生成日時: 2022-01-16 07:35:59
+-- 生成日時: 2022-01-20 15:16:41
 -- サーバのバージョン： 10.4.22-MariaDB
 -- PHP のバージョン: 8.0.13
 
@@ -31,22 +31,24 @@ CREATE TABLE `like_table` (
   `id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `todo_id` int(11) NOT NULL,
-  `created_at` datetime NOT NULL
+  `created_at` datetime NOT NULL,
+  `geo_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 
 --
 -- テーブルのデータのダンプ `like_table`
 --
 
-INSERT INTO `like_table` (`id`, `user_id`, `todo_id`, `created_at`) VALUES
-(22, 1, 8, '2022-01-15 14:45:33'),
-(25, 1, 9, '2022-01-15 14:45:34'),
-(28, 5, 8, '2022-01-15 14:50:26'),
-(29, 5, 6, '2022-01-15 14:50:26'),
-(30, 5, 1, '2022-01-15 14:50:26'),
-(31, 5, 9, '2022-01-15 14:50:27'),
-(32, 1, 6, '2022-01-15 15:32:20'),
-(34, 1, 1, '2022-01-15 15:32:22');
+INSERT INTO `like_table` (`id`, `user_id`, `todo_id`, `created_at`, `geo_id`) VALUES
+(22, 1, 8, '2022-01-15 14:45:33', 0),
+(25, 1, 9, '2022-01-15 14:45:34', 0),
+(28, 5, 8, '2022-01-15 14:50:26', 0),
+(29, 5, 6, '2022-01-15 14:50:26', 0),
+(30, 5, 1, '2022-01-15 14:50:26', 0),
+(31, 5, 9, '2022-01-15 14:50:27', 0),
+(34, 1, 1, '2022-01-15 15:32:22', 0),
+(41, 1, 6, '2022-01-20 15:43:22', 0),
+(42, 1, 5, '2022-01-20 15:43:22', 0);
 
 -- --------------------------------------------------------
 
@@ -150,6 +152,36 @@ INSERT INTO `proto_3_table` (`id`, `date`, `lat`, `lng`, `score`, `reason`) VALU
 -- --------------------------------------------------------
 
 --
+-- テーブルの構造 `search_table`
+--
+
+CREATE TABLE `search_table` (
+  `id` int(11) NOT NULL,
+  `keyword` varchar(20) COLLATE utf8mb4_bin NOT NULL,
+  `searched_at` datetime NOT NULL,
+  `username` int(30) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+--
+-- テーブルのデータのダンプ `search_table`
+--
+
+INSERT INTO `search_table` (`id`, `keyword`, `searched_at`, `username`) VALUES
+(1, '西鉄平尾駅', '2022-01-20 22:13:33', 0),
+(2, '西鉄平尾駅', '2022-01-20 22:32:43', 0),
+(3, '西鉄平尾駅', '2022-01-20 22:32:51', 0),
+(4, '西鉄平尾駅', '2022-01-20 22:35:49', 0),
+(5, '西鉄平尾駅', '2022-01-20 22:36:23', 0),
+(6, '西鉄平尾駅', '2022-01-20 22:37:55', 0),
+(7, '西鉄平尾駅', '2022-01-20 22:40:24', 0),
+(8, '西鉄平尾駅', '2022-01-20 22:40:29', 0),
+(9, '西鉄平尾駅', '2022-01-20 23:06:31', 0),
+(10, '西鉄平尾駅', '2022-01-20 23:07:24', 0),
+(11, '西鉄平尾駅', '2022-01-20 23:07:52', 0);
+
+-- --------------------------------------------------------
+
+--
 -- テーブルの構造 `todo_table`
 --
 
@@ -195,7 +227,10 @@ CREATE TABLE `users_table` (
 
 INSERT INTO `users_table` (`id`, `username`, `password`, `is_admin`, `is_deleted`, `created_at`, `updated_at`) VALUES
 (1, 'admin', 'admin', 1, 0, '2022-01-08 14:25:14', '2022-01-08 14:25:14'),
-(5, 'admin2', 'admin2', 1, 0, '2022-01-08 14:25:14', '2022-01-08 14:25:14');
+(5, 'admin2', 'admin2', 1, 0, '2022-01-08 14:25:14', '2022-01-08 14:25:14'),
+(9, 'test@example.co.jp', '111111', 0, 0, '2022-01-20 16:05:38', '2022-01-20 16:05:38'),
+(10, 'test2@example.co.jp', '222222', 0, 0, '2022-01-20 18:25:32', '2022-01-20 18:25:32'),
+(11, 'test3@example.co.jp', '333333', 0, 0, '2022-01-20 23:08:24', '2022-01-20 23:08:24');
 
 --
 -- ダンプしたテーブルのインデックス
@@ -211,6 +246,12 @@ ALTER TABLE `like_table`
 -- テーブルのインデックス `proto_3_table`
 --
 ALTER TABLE `proto_3_table`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- テーブルのインデックス `search_table`
+--
+ALTER TABLE `search_table`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -233,13 +274,19 @@ ALTER TABLE `users_table`
 -- テーブルの AUTO_INCREMENT `like_table`
 --
 ALTER TABLE `like_table`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- テーブルの AUTO_INCREMENT `proto_3_table`
 --
 ALTER TABLE `proto_3_table`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=109;
+
+--
+-- テーブルの AUTO_INCREMENT `search_table`
+--
+ALTER TABLE `search_table`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- テーブルの AUTO_INCREMENT `todo_table`
@@ -251,7 +298,7 @@ ALTER TABLE `todo_table`
 -- テーブルの AUTO_INCREMENT `users_table`
 --
 ALTER TABLE `users_table`
-  MODIFY `id` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

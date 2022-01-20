@@ -1,6 +1,10 @@
 <?php
 // DB接続
 include("functions.php");
+session_start();
+//セッションチェック
+check_session_id();
+
 // DB接続
 $pdo = connect_to_db();
 
@@ -35,6 +39,7 @@ foreach ($result as $record) {
     day: {$day},
     score: {$record["score"]},
     reason: {$record["reason"]},
+    id: {$record["id"]}
   },
   ";  
 
@@ -64,11 +69,40 @@ foreach ($result_good as $record_good) {
   $month = substr($record_good['date'],5,2); 
   $day = substr($record_good['date'],8,2); 
 
-  $output_good .= "
-    { lat: {$record_good["lat"]},lng: {$record_good["lng"]},year: {$year},month: {$month},day: {$day},score: {$record_good["score"]}},
+  $output_good .= "{
+    lat: {$record_good["lat"]},
+    lng: {$record_good["lng"]},
+    year: {$year},
+    month: {$month},
+    day: {$day},
+    score: {$record_good["score"]}
+  },
   ";
 }
 
+
+// ユーザー情報----------------------------------------------------------
+//----------------------------------------------------------------------
+$sql_user="SELECT * FROM users_table WHERE username = '".$_SESSION['username']."'";
+$stmt_user = $pdo->prepare($sql_user);
+
+try {
+  $status_user = $stmt_user->execute();
+} catch (PDOException $e) {
+  echo json_encode(["sql error" => "{$e->getMessage()}"]);
+  exit();
+}
+
+// SQL実行の処理
+$result_user = $stmt_user->fetchAll(PDO::FETCH_ASSOC);
+$output_user = "";
+foreach ($result_user as $record_user){
+
+  $output_user .= "
+      {$record_user["username"]}    
+    
+  ";
+}
 
 ?>
 
@@ -84,12 +118,23 @@ foreach ($result_good as $record_good) {
 
 <body>
 
-  <h1>ゴミステーションの状態で治安を確認！(閲覧)</h1>
+  <h1>治安Easy!!! (閲覧)</h1>
 
-      <!-- 住所入力 -->
-    <span>住所を入力してください。</span><br>
-    <input type="text" id="addressInput" placeholder="山口県周南市遠石">
-    <button id="searchGeo">検索</button>
+    <!-- ユーザー名表示 -->
+
+    <div style="text-align:right">
+      <?= $output_user ?>様　<a href="logout_user.php">ログアウトする</a>
+    </div>
+
+    <!-- 住所入力 -->
+    <!-- <form action="read_search_act.php" method="POST"> ※POSTとjqueryのonclick両方同時にできる方法ないかなあ-->
+      <div>
+        <span>住所を入力してください。</span><br>
+        <input type="text" id="addressInput" placeholder="西鉄平尾駅" name="keyword">
+        <button id="searchGeo">検索</button>
+      </div>
+    <!-- </form> -->
+
     <div>
         <input type="hidden" id="lat" name="lat_geo">
         <input type="hidden" id="lng" name="lng_geo">
@@ -110,7 +155,7 @@ foreach ($result_good as $record_good) {
 
     <!-- <legend>一覧画面</legend> -->
     <div style="text-align:center;margin-top:10px">
-      <a href="login.php">-管理画面-</a>
+      <a href="login_admin.php">-管理画面-</a>
     </div>
     
 
@@ -285,16 +330,7 @@ foreach ($result_good as $record_good) {
                           }
                         });
                       }
-                    };
-
-
-
-                  
-
-
-
-
-                  
+                    };                 
 
 
                   //悪いゴミステーションのマッピング
