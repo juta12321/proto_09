@@ -40,9 +40,9 @@ foreach ($result as $record) {
     score: {$record["score"]},
     reason: {$record["reason"]},
     id: {$record["id"]}
+    image:{$record["image"]}
   },
   ";  
-
 
 };
 
@@ -81,28 +81,28 @@ foreach ($result_good as $record_good) {
 }
 
 
-// ユーザー情報----------------------------------------------------------
-//----------------------------------------------------------------------
-$sql_user="SELECT * FROM users_table WHERE username = '".$_SESSION['username']."'";
-$stmt_user = $pdo->prepare($sql_user);
+// // ユーザー情報----------------------------------------------------------
+// //----------------------------------------------------------------------
+// $sql_user="SELECT * FROM users_table WHERE username = '".$_SESSION['username']."'";
+// $stmt_user = $pdo->prepare($sql_user);
 
-try {
-  $status_user = $stmt_user->execute();
-} catch (PDOException $e) {
-  echo json_encode(["sql error" => "{$e->getMessage()}"]);
-  exit();
-}
+// try {
+//   $status_user = $stmt_user->execute();
+// } catch (PDOException $e) {
+//   echo json_encode(["sql error" => "{$e->getMessage()}"]);
+//   exit();
+// }
 
-// SQL実行の処理
-$result_user = $stmt_user->fetchAll(PDO::FETCH_ASSOC);
-$output_user = "";
-foreach ($result_user as $record_user){
+// // SQL実行の処理
+// $result_user = $stmt_user->fetchAll(PDO::FETCH_ASSOC);
+// $output_user = "";
+// foreach ($result_user as $record_user){
 
-  $output_user .= "
-      {$record_user["username"]}    
+//   $output_user .= "
+//       {$record_user["username"]}    
     
-  ";
-}
+//   ";
+// }
 
 ?>
 
@@ -123,7 +123,7 @@ foreach ($result_user as $record_user){
     <!-- ユーザー名表示 -->
 
     <div style="text-align:right">
-      <?= $output_user ?>様　<a href="logout_user.php">ログアウトする</a>
+      <?= $_SESSION["username"] ?> 様　<a href="logout_user.php">ログアウトする</a>
     </div>
 
     <!-- 住所入力 -->
@@ -210,7 +210,6 @@ foreach ($result_user as $record_user){
           },
 
           function (results, status){
-            console.log(results, status)
             var latlng = "";
             if (status == google.maps.GeocoderStatus.OK){
               // 取得が成功した場合
@@ -254,8 +253,6 @@ foreach ($result_user as $record_user){
 
                   //メッシュ全部
                   const mesh = mesh1+mesh2+mesh3;
-                  console.log(mesh);
-
 
 
 
@@ -269,68 +266,391 @@ foreach ($result_user as $record_user){
                       lat:lat , lng: lng,
                     },
 
-                    zoom: 16  ,
+                    zoom: 15  ,
                     radius: 5,
                   });
 
                   // マップにメッシュを追加(中心)      
-                  var code = mesh;
-                  console.log(code)
-                  for(var i=0;i<4;i++){
-                    var loc =  meshcode2latlng.quater(code);
-                    var rectangle = new google.maps.Rectangle({
-                      strokeColor: '#ff0000',
-                      strokeWeight: 0.5,
-                      fillColor: '#ffffff00',
-                      map: map,
-                      bounds: {
-                        south: loc.south,
-                        west: loc.west,
-                        north: loc.north+0.0062,
-                        east: loc.east+0.0094
-                      }
-                    });
-                  }
-                  // マップにメッシュを追加(南向き)      
-                  for(var i2=1;i2<3;i2++){
-                    var code = mesh-(i2*10);
-                    console.log(code)
-                    for(var i=0;i<4;i++){
-                      var loc =  meshcode2latlng.quater(code);
-                      var rectangle = new google.maps.Rectangle({
-                        strokeColor: '#ff0000',
-                        strokeWeight: 0.5,
-                        fillColor: '#ffffff00',
-                        map: map,
-                        bounds: {
-                          south: loc.south,
-                          west: loc.west,
-                          north: loc.north+0.00625,
-                          east: loc.east+0.0094
+                  // var code = mesh;
+                  // console.log(code)
+                  // for(var i=0;i<4;i++){
+                  //   var loc =  meshcode2latlng.quater(code);
+                  //   var rectangle = new google.maps.Rectangle({
+                  //     strokeColor: '#0000ff',
+                  //     strokeWeight: 0.5,
+                  //     fillColor: '#ffffff00',
+                  //     map: map,
+                  //     bounds: {
+                  //       south: loc.south,
+                  //       west: loc.west,
+                  //       north: loc.north+0.006248 ,
+                  //       east: loc.east+0.009375
+                  //     }
+                  //   });
+                  // }
+
+                  // // マップにメッシュを追加(中心東向き)
+                  // var mesh_n=mesh.substr(0,7)+0
+                  // console.log(mesh_n)
+                  // for(var m=0;m<10;m++){
+                  //   var code = Number(mesh_n)+m;
+                  //   for(var i=0;i<4;i++){
+                  //     var loc =  meshcode2latlng.quater(code);
+                  //     var rectangle = new google.maps.Rectangle({
+                  //       strokeColor: '#ff0000',
+                  //       strokeWeight: 0.5,
+                  //       fillColor: '#ffffff00',
+                  //       map: map,
+                  //       bounds: {
+                  //         south: loc.south,
+                  //         west: loc.west,
+                  //         north: loc.north+0.006248,
+                  //         east: loc.east+0.009375
+                  //       }
+                  //     });
+                  //   }
+                  // };
+
+
+                  // //マップにメッシュを追加(中心+1)※上限の場合追加しない
+                  // if(!(Number(mesh.substr(-2,1))+1===10)){
+                  //   var mesh_n=mesh.substr(0,7)+0
+                  //   for(var m3=0;m3<10;m3++){
+                  //     var code = Number(mesh_n)+10+m3;
+
+                  //     for(var i=0;i<4;i++){
+                  //       var loc =  meshcode2latlng.quater(code);
+                  //       var rectangle = new google.maps.Rectangle({
+                  //         strokeColor: '#ff0000',
+                  //         strokeWeight: 0.5,
+                  //         fillColor: '#ffffff00',
+                  //         map: map,
+                  //         bounds: {
+                  //           south: loc.south,
+                  //           west: loc.west,
+                  //           north: loc.north+0.006248,
+                  //           east: loc.east+0.009375
+                  //         }
+                  //       });
+                  //     }
+                  //   }
+                  // }
+
+                  // //マップにメッシュを追加(中心+2)※上限の場合追加しない
+                  // if(!(Number(mesh.substr(-2,1))+2===10)){
+                  //   var mesh_n=mesh.substr(0,7)+0
+                  //   for(var m5=0;m5<10;m5++){
+                  //     var code = Number(mesh_n)+20+m5;
+                  //     for(var i=0;i<4;i++){
+                  //       var loc =  meshcode2latlng.quater(code);
+                  //       var rectangle = new google.maps.Rectangle({
+                  //         strokeColor: '#ff0000',
+                  //         strokeWeight: 0.5,
+                  //         fillColor: '#ffffff00',
+                  //         map: map,
+                  //         bounds: {
+                  //           south: loc.south,
+                  //           west: loc.west,
+                  //           north: loc.north+0.006248,
+                  //           east: loc.east+0.009375
+                  //         }
+                  //       });
+                  //     }
+                  //   }
+                  // }
+
+
+                  // //マップにメッシュを追加(中心+3)※上限の場合追加しない
+                  // if(!(Number(mesh.substr(-2,1))+3===10)){
+                  //   var mesh_n=mesh.substr(0,7)+0
+                  //   for(var m5=0;m5<10;m5++){
+                  //     var code = Number(mesh_n)+30+m5;
+                  //     for(var i=0;i<4;i++){
+                  //       var loc =  meshcode2latlng.quater(code);
+                  //       var rectangle = new google.maps.Rectangle({
+                  //         strokeColor: '#ff0000',
+                  //         strokeWeight: 0.5,
+                  //         fillColor: '#ffffff00',
+                  //         map: map,
+                  //         bounds: {
+                  //           south: loc.south,
+                  //           west: loc.west,
+                  //           north: loc.north+0.006248,
+                  //           east: loc.east+0.009375
+                  //         }
+                  //       });
+                  //     }
+                  //   }
+                  // }
+
+
+                  //マップにメッシュを追加※追加エリアは目的地をメッシュ上で上方向に2桁範囲内まで
+                  for(mesh_r=0;mesh_r<10;mesh_r++){
+                    if(!(Number(mesh.substr(-2,1))+mesh_r>9)){
+                      var mesh_n=mesh.substr(0,7)+0
+                      for(var m=0;m<10;m++){
+                        var code = Number(mesh_n)+Number(mesh_r)*10+m;
+                        for(var i=0;i<4;i++){
+                          var loc =  meshcode2latlng.quater(code);
+                          var rectangle = new google.maps.Rectangle({
+                            strokeColor: '#ff69b4',
+                            strokeWeight: 0.5,
+                            fillColor: '#ffffff00',
+                            map: map,
+                            bounds: {
+                              south: loc.south,
+                              west: loc.west,
+                              north: loc.north+0.006248,
+                              east: loc.east+0.009375
+                            }
+                          });
                         }
-                      });
+                      }
                     }
                   }
-                    // マップにメッシュを追加(西向き) 
-                    for(var i3=1;i3<3;i3++){
-                      var code = mesh-(i3);
-                      console.log(code)
-                      for(var i=0;i<4;i++){
-                        var loc =  meshcode2latlng.quater(code);
-                        var rectangle = new google.maps.Rectangle({
-                          strokeColor: '#ff0000',
-                          strokeWeight: 0.5,
-                          fillColor: '#ffffff00',
-                          map: map,
-                          bounds: {
-                            south: loc.south,
-                            west: loc.west,
-                            north: loc.north+0.0062,
-                            east: loc.east+0.009375
-                          }
-                        });
+
+
+                  //マップにメッシュを追加※追加エリアは目的地をメッシュ上で下方向に2桁範囲内まで
+                  for(mesh_r2=0;mesh_r2<10;mesh_r2++){
+                    if(!(Number(mesh.substr(-2,1))-mesh_r2<0)){
+                      var mesh_n=mesh.substr(0,7)+0
+                      for(var m=0;m<10;m++){
+                        var code = Number(mesh_n)+Number(mesh_r2)*-10+m;
+                        for(var i=0;i<4;i++){
+                          var loc =  meshcode2latlng.quater(code);
+                          var rectangle = new google.maps.Rectangle({
+                            strokeColor: '#ff69b4',
+                            strokeWeight: 0.5,
+                            fillColor: '#ffffff00',
+                            map: map,
+                            bounds: {
+                              south: loc.south,
+                              west: loc.west,
+                              north: loc.north+0.006248,
+                              east: loc.east+0.009375
+                            }
+                          });
+                        }
                       }
-                    };                 
+                    }
+                  }
+
+                  //マップにメッシュを追加※追加エリアはメッシュ上で目的地の上のブロック
+                  for(mesh_r3=0;mesh_r3<10;mesh_r3++){
+                    var mesh_out_up=mesh.substr(0,4)+(Number(mesh.substr(4,1))+1)+mesh.substr(5,1)+0+mesh.substr(-1,1)
+                      var mesh_n=mesh_out_up.substr(0,7)+0
+                      for(var m=0;m<10;m++){
+                        var code = Number(mesh_n)+Number(mesh_r3)*10+m;;
+                        for(var i=0;i<4;i++){
+                          var loc =  meshcode2latlng.quater(code);
+                          var rectangle = new google.maps.Rectangle({
+                            strokeColor: '#ff69b4',
+                            strokeWeight: 0.5,
+                            fillColor: '#ffffff00',
+                            map: map,
+                            bounds: {
+                              south: loc.south,
+                              west: loc.west,
+                              north: loc.north+0.006248,
+                              east: loc.east+0.009375
+                            }
+                          });
+                        }
+                      }
+                  }
+
+                  //マップにメッシュを追加※追加エリアはメッシュ上で目的地の左のブロック
+                  for(mesh_r4=0;mesh_r4<10;mesh_r4++){
+                    var mesh_out_left=mesh.substr(0,5)+(Number(mesh.substr(5,1))-1)+mesh.substr(6,1)+0
+                      var mesh_n=mesh_out_left.substr(0,7)+0
+    
+                      for(var m=0;m<10;m++){
+                        var code = Number(mesh_n)+Number(mesh_r4)*10+m;;
+                        for(var i=0;i<4;i++){
+                          var loc =  meshcode2latlng.quater(code);
+                          var rectangle = new google.maps.Rectangle({
+                            strokeColor: '#ff69b4',
+                            strokeWeight: 0.5,
+                            fillColor: '#ffffff00',
+                            map: map,
+                            bounds: {
+                              south: loc.south,
+                              west: loc.west,
+                              north: loc.north+0.006248,
+                              east: loc.east+0.009375
+                            }
+                          });
+                        }
+                      }
+                  }
+
+
+                  //マップにメッシュを追加※追加エリアはメッシュ上で目的地の左上のブロック
+                  for(mesh_r5=0;mesh_r5<10;mesh_r5++){
+                    var mesh_out_left_up=mesh.substr(0,4)+(Number(mesh.substr(4,1))+1)+(Number(mesh.substr(5,1))-1)+0+0
+                      var mesh_n=mesh_out_left_up.substr(0,7)+0
+                      console.log(mesh_out_left_up)
+                      
+                      for(var m=0;m<10;m++){
+                        var code = Number(mesh_n)+Number(mesh_r5)*10+m;;
+                        for(var i=0;i<4;i++){
+                          var loc =  meshcode2latlng.quater(code);
+                          var rectangle = new google.maps.Rectangle({
+                            strokeColor: '#ff69b4',
+                            strokeWeight: 0.5,
+                            fillColor: '#ffffff00',
+                            map: map,
+                            bounds: {
+                              south: loc.south,
+                              west: loc.west,
+                              north: loc.north+0.006248,
+                              east: loc.east+0.009375
+                            }
+                          });
+                        }
+                      }
+                  }
+
+
+                  //マップにメッシュを追加※追加エリアはメッシュ上で目的地の左上のブロック
+                  for(mesh_r6=0;mesh_r6<10;mesh_r6++){
+                    var mesh_out_left_up=mesh.substr(0,4)+(Number(mesh.substr(4,1)))+(Number(mesh.substr(5,1))-1)+0+0
+                      var mesh_n=mesh_out_left_up.substr(0,7)+0
+ 
+                      for(var m=0;m<10;m++){
+                        var code = Number(mesh_n)+Number(mesh_r6)*10+m;;
+                        for(var i=0;i<4;i++){
+                          var loc =  meshcode2latlng.quater(code);
+                          var rectangle = new google.maps.Rectangle({
+                            strokeColor: '#ff69b4',
+                            strokeWeight: 0.5,
+                            fillColor: '#ffffff00',
+                            map: map,
+                            bounds: {
+                              south: loc.south,
+                              west: loc.west,
+                              north: loc.north+0.006248,
+                              east: loc.east+0.009375
+                            }
+                          });
+                        }
+                      }
+                  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  // // マップにメッシュを追加(中心+1東向き)
+                  // for(var m3=0;m3<10-(mesh.substr(-2,1));m3++){
+                  //   var code = Number(mesh)+m3*10;
+                  //   for(var i=0;i<4;i++){
+                  //     var loc =  meshcode2latlng.quater(code);
+                  //     var rectangle = new google.maps.Rectangle({
+                  //       strokeColor: '#ff0000',
+                  //       strokeWeight: 0.5,
+                  //       fillColor: '#ffffff00',
+                  //       map: map,
+                  //       bounds: {
+                  //         south: loc.south,
+                  //         west: loc.west,
+                  //         north: loc.north+0.006248,
+                  //         east: loc.east+0.009375
+                  //       }
+                  //     });
+                  //   }
+                  // };
+
+                  // // マップにメッシュを追加(中心西向き)
+                  // for(var m4=0;m4<mesh.substr(-2,1);m4++){
+                  //   var code = Number(mesh)-m4*10;
+                  //   for(var i=0;i<4;i++){
+                  //     var loc =  meshcode2latlng.quater(code);
+                  //     var rectangle = new google.maps.Rectangle({
+                  //       strokeColor: '#ff0000',
+                  //       strokeWeight: 0.5,
+                  //       fillColor: '#ffffff00',
+                  //       map: map,
+                  //       bounds: {
+                  //         south: loc.south,
+                  //         west: loc.west,
+                  //         north: loc.north+0.006248,
+                  //         east: loc.east+0.009375
+                  //       }
+                  //     });
+                  //   }
+                  // };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  
+
+                  // マップにメッシュを追加(中心-1東向き)      
+                  // for(var i2=0;i2<3;i2++){
+                  //   var code = Number(mesh)-10+i2;
+                  //   for(var i=0;i<4;i++){
+                  //     var loc =  meshcode2latlng.quater(code);
+                  //     var rectangle = new google.maps.Rectangle({
+                  //       strokeColor: '#ff0000',
+                  //       strokeWeight: 0.5,
+                  //       fillColor: '#ffffff00',
+                  //       map: map,
+                  //       bounds: {
+                  //         south: loc.south,
+                  //         west: loc.west,
+                  //         north: loc.north+0.00625,
+                  //         east: loc.east+0.009375
+                  //       }
+                  //     });
+                  //   }
+                  // }
+
+                  //   // マップにメッシュを追加(中心+1h東向き) 
+                  //    for(var i4=0;i4<3;i4++){
+                  //      var code = Number(mesh)+10+i4;
+                  //      console.log(code)
+                  //      for(var i=0;i<4;i++){
+                  //        var loc =  meshcode2latlng.quater(code);
+                  //        var rectangle = new google.maps.Rectangle({
+                  //          strokeColor: '#ff0000',
+                  //          strokeWeight: 0.5,
+                  //          fillColor: '#ffffff00',
+                  //          map: map,
+                  //          bounds: {
+                  //            south: loc.south-0.000002,
+                  //            west: loc.west,
+                  //            north: loc.north+0.00625,
+                  //            east: loc.east+0.009375
+                  //          }
+                  //        });
+                  //      }
+                  //    }; 
+
+
 
 
                   //悪いゴミステーションのマッピング

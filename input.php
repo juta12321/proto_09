@@ -89,12 +89,11 @@ foreach ($result_good as $record_good) {
        <button id="gio_btn">位置情報を取得</button>
     </div>
 
-    <form  action="create.php" method="POST">
+    <form  action="create.php" method="POST" enctype="multipart/form-data">
 
         <div>
             緯度：<input type="text" name="lat" id="lat" ></input>　経度：<input type="text" name="lng" id="lng" ></input>
         </div>       
-
 
         <div class="score">
             状態：<select name="score" id="score" size="1" style="width:90px;height:22px" > 
@@ -102,6 +101,10 @@ foreach ($result_good as $record_good) {
             <option value="0">良い</option>
             <option value="1">悪い</option>
             </select>
+        </div>
+
+        <div >
+        <input style="margin-top:10px"  type="file" name="upfile" accept="image/*" capture="camera" />
         </div>
 
         <div>
