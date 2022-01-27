@@ -9,7 +9,7 @@ check_session_id();
 if (
   !isset($_POST['lat']) || $_POST['lat']=='' ||
   !isset($_POST['lng']) || $_POST['lng']=='' ||
-  !isset($_POST['score']) || $_POST['score']==''
+  !isset($_POST['score']) || $_POST['score']=='' 
   
 ) {
   exit('ParamError');
@@ -18,6 +18,9 @@ if (
 $lat = $_POST['lat'];
 $lng = $_POST['lng'];
 $score = $_POST['score'];
+$reason = $_POST['reason'];
+
+
 
 
 // DB接続
@@ -54,8 +57,8 @@ if (isset($_FILES['upfile']) && $_FILES['upfile']['error'] == 0) {
 
 
 
-// SQL作成&実行 ※reasonを付けないといけないけど付けてない
-$sql = 'INSERT INTO proto_3_table (id, date, lat, lng, score,image) VALUES (NULL, now(), :lat, :lng, :score, :image)';
+// SQL作成&実行
+$sql = 'INSERT INTO proto_3_table (id, date, lat, lng, score,reason,image) VALUES (NULL, now(), :lat, :lng, :score, :reason, :image)';
 
 
 $stmt = $pdo->prepare($sql);
@@ -64,7 +67,8 @@ $stmt = $pdo->prepare($sql);
 $stmt->bindValue(':lat', $lat, PDO::PARAM_STR);
 $stmt->bindValue(':lng', $lng, PDO::PARAM_STR);
 $stmt->bindValue(':score', $score, PDO::PARAM_STR);
-$stmt->bindValue(':image', $save_path, PDO::PARAM_STR);
+$stmt->bindValue(':reason',$reason, PDO::PARAM_STR);
+$stmt->bindValue(':image',$save_path, PDO::PARAM_STR);
 
 
 // SQL実行（実行に失敗すると `sql error ...` が出力される）

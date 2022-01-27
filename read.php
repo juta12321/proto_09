@@ -38,9 +38,9 @@ foreach ($result as $record) {
     month: {$month},
     day: {$day},
     score: {$record["score"]},
-    reason: {$record["reason"]},
-    id: {$record["id"]}
-    image:{$record["image"]}
+    reason: '{$record["reason"]}',
+    id: {$record["id"]},
+    image:'{$record["image"]}',
   },
   ";  
 
@@ -667,7 +667,7 @@ foreach ($result_good as $record_good) {
             
                     //クリックしたら情報を表示
                     const infoWindow = new google.maps.InfoWindow({
-	      	            content:"調査日:"+d.year+"年"+d.month+"月"+d.day+"日"+"<br>"+"状態:悪い"+"<br>"+"理由:"+d.reason
+	      	            content:"調査日:"+d.year+"年"+d.month+"月"+d.day+"日"+"<br>"+"状態:悪い"+"<br>"+"理由:"+d.reason+"<br>"+"<img src="+d.image+" height='150px'>"
         	          });
           
 	                  google.maps.event.addListener(marker, 'click', function() { //マーカークリック時の動作

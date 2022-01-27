@@ -103,6 +103,11 @@ foreach ($result_good as $record_good) {
             </select>
         </div>
 
+        <div>
+        悪い理由:<input name="reason" type="text">
+
+        </div>
+
         <div >
         <input style="margin-top:10px"  type="file" name="upfile" accept="image/*" capture="camera" />
         </div>
