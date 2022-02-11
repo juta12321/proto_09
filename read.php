@@ -1,9 +1,9 @@
 <?php
 // DB接続
 include("functions.php");
-session_start();
+// session_start();
 //セッションチェック
-check_session_id();
+// check_session_id();
 
 // DB接続
 $pdo = connect_to_db();
@@ -24,6 +24,8 @@ try {
 // SQL実行の処理
 $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $output = "";
+//↓これだけ、ゴミステーションの調査数を集計する用のカウンター
+$count=0;
 foreach ($result as $record) {
 
   //表示用にdateを細分化
@@ -43,12 +45,14 @@ foreach ($result as $record) {
     image:'{$record["image"]}',
   },
   ";  
-
+    //↓これも、ゴミステーションの調査数を集計する用のカウンター
+  $count++;
+   
 };
 
 // SQL作成&実行2(良いゴミステーション)------------------------------------
 //----------------------------------------------------------------------
-$sql_good="SELECT * FROM proto_3_table WHERE score = 0";
+$sql_good="SELECT * FROM proto_3_table WHERE score = 0 ";
 
 $stmt_good = $pdo->prepare($sql_good);
 
@@ -62,6 +66,8 @@ try {
 // SQL実行の処理
 $result_good = $stmt_good->fetchAll(PDO::FETCH_ASSOC);
 $output_good = "";
+//↓これだけ、ゴミステーションの調査数を集計する用のカウンター
+$count_good=0;
 foreach ($result_good as $record_good) {
 
   //表示用にdateを細分化
@@ -78,7 +84,69 @@ foreach ($result_good as $record_good) {
     score: {$record_good["score"]}
   },
   ";
+  //↓これも、ゴミステーションの調査数を集計する用のカウンター
+  $count_good++;
+  
 }
+
+// SQL作成&実行3(検索エリアのゴミステーション(悪い方)の数を集計)--------------------
+//----------------------------------------------------------------------
+$sql_count = "SELECT * FROM proto_3_table WHERE score = 1 and mesh=50302382";
+$stmt_count = $pdo->prepare($sql_count);
+
+try {
+  $status_count = $stmt_count->execute();
+} catch (PDOException $e) {
+  echo json_encode(["sql error" => "{$e->getMessage()}"]);
+  exit();
+}
+
+// SQL実行の処理
+$result_count = $stmt_count->fetchAll(PDO::FETCH_ASSOC);
+$output_count = "";
+//ゴミステーション(悪い方)の調査数を集計する用のカウンター
+$count=0;
+foreach ($result_count as $record_count) {
+
+  //ゴミステーションの調査数を集計する用のカウンター
+$count++;
+   
+};
+
+// SQL作成&実行3(検索エリアのゴミステーション(良い方)の数を集計)--------------------
+//----------------------------------------------------------------------
+$sql_count_good = "SELECT * FROM proto_3_table WHERE score = 0 and mesh=50302382";
+$stmt_count_good = $pdo->prepare($sql_count_good);
+
+try {
+  $status_count_good = $stmt_count_good->execute();
+} catch (PDOException $e) {
+  echo json_encode(["sql error" => "{$e->getMessage()}"]);
+  exit();
+}
+
+// SQL実行の処理
+$result_count_good = $stmt_count_good->fetchAll(PDO::FETCH_ASSOC);
+$output_count_good = "";
+//ゴミステーション(悪い方)の調査数を集計する用のカウンター
+$count_good=0;
+foreach ($result_count_good as $record_count_good) {
+
+  //ゴミステーションの調査数を集計する用のカウンター
+$count_good++;
+   
+};
+
+
+
+
+
+
+
+
+
+
+
 
 
 // // ユーザー情報----------------------------------------------------------
@@ -117,14 +185,15 @@ foreach ($result_good as $record_good) {
 </head>
 
 <body>
+  
 
   <h1>治安Easy!!! (閲覧)</h1>
 
     <!-- ユーザー名表示 -->
 
-    <div style="text-align:right">
-      <?= $_SESSION["username"] ?> 様　<a href="logout_user.php">ログアウトする</a>
-    </div>
+    <!-- <div style="text-align:right">
+      <//?= $_SESSION["username"] ?> 様　<a href="logout_user.php">ログアウトする</a>
+    </div> -->
 
     <!-- 住所入力 -->
     <!-- <form action="read_search_act.php" method="POST"> ※POSTとjqueryのonclick両方同時にできる方法ないかなあ-->
@@ -161,7 +230,12 @@ foreach ($result_good as $record_good) {
 
  
 
-    <script>    
+    <script> 
+      console.log("このエリアの悪いゴミステーションは"+<?=$count?>+"ヶ所")    
+      console.log("良いゴミステーションは"+ <?=$count_good?>+"ヶ所")
+      const percent = Number(Number(<?=$count_good?>)/(Number(<?=$count_good?>)+Number(<?=$count?>))*100)
+       console.log("この場所のゴミステーションのキレイさは"+percent.toFixed(2)+"%です")
+      
 
       //表示位置の定義(悪いゴミステーション)
       const data = [
@@ -225,7 +299,7 @@ foreach ($result_good as $record_good) {
 
                   $('#lat').val(lat);
                   $('#lng').val(lng);
-                  console.log(lat+","+lng)
+
                   //メッシュ変換コード
                   //緯度
                   var p = String(Math.floor((lat * 60) / 40));
@@ -253,12 +327,12 @@ foreach ($result_good as $record_good) {
 
                   //メッシュ全部
                   const mesh = mesh1+mesh2+mesh3;
+                  console.log("メッシュコードは"+mesh)
 
 
 
 
-
-                  
+                  //取得した位置情報を中心に表示(ZOOMは禁止に)
                   let map;
                   map = new google.maps.Map(document.getElementById("map"), {
                     
@@ -268,6 +342,7 @@ foreach ($result_good as $record_good) {
 
                     zoom: 15  ,
                     radius: 5,
+                    // scrollwheel: false
                   });
 
                   // マップにメッシュを追加(中心)      
@@ -390,24 +465,55 @@ foreach ($result_good as $record_good) {
                       var mesh_n=mesh.substr(0,7)+0
                       for(var m=0;m<10;m++){
                         var code = Number(mesh_n)+Number(mesh_r)*10+m;
+                        var loc =  meshcode2latlng.quater(code);
                         for(var i=0;i<4;i++){
-                          var loc =  meshcode2latlng.quater(code);
-                          var rectangle = new google.maps.Rectangle({
-                            strokeColor: '#ff69b4',
-                            strokeWeight: 0.5,
-                            fillColor: '#ffffff00',
-                            map: map,
-                            bounds: {
-                              south: loc.south,
-                              west: loc.west,
-                              north: loc.north+0.006248,
-                              east: loc.east+0.009375
-                            }
-                          });
+                            var rectangle = new google.maps.Rectangle({
+                              strokeColor: '#ff69b4',
+                              strokeWeight: 0.5,
+                              fillColor: '#ffffff00',
+                              map: map,
+                              bounds: {
+                                south: loc.south,
+                                west: loc.west,
+                                north: loc.north+0.006248,
+                                east: loc.east+0.009375
+                              }
+                              
+                            });
+                         
                         }
                       }
                     }
                   }
+
+                  //検索目的地のメッシュのみ色付け
+                    var loc =  meshcode2latlng.quater(mesh);
+                    var rectangle = new google.maps.Rectangle({
+                      strokeColor: '#0000ff',
+                      strokeWeight: 0.5,
+                      fillColor: '#0067c0',
+                      map: map,
+                      bounds: {
+                        south: loc.south,
+                        west: loc.west,
+                        north: loc.north+0.006248 ,
+                        east: loc.east+0.009375
+                      }
+                    });
+                    console.log("北東："+Number(loc.north+0.006248)+","+Number(loc.east+0.009375))
+                    console.log("北西："+Number(loc.north+0.006248)+","+loc.west)  
+                    console.log("南東："+loc.south+","+Number(loc.east+0.009375))
+                    console.log("南西："+loc.south+","+loc.west)
+
+                    const northeast_lat = Number(loc.north+0.006248);
+                    const northeast_lng =Number(loc.east+0.009375);
+
+                    //北東から左下に入ってるか判定
+                    if ((data[0].lat < northeast_lat)&&(data[0].lng < northeast_lng)){
+                      console.log("OK")
+                    }
+                    // if(data[0].lat>)
+                  
 
 
                   //マップにメッシュを追加※追加エリアは目的地をメッシュ上で下方向に2桁範囲内まで
@@ -434,6 +540,7 @@ foreach ($result_good as $record_good) {
                       }
                     }
                   }
+
 
                   //マップにメッシュを追加※追加エリアはメッシュ上で目的地の上のブロック
                   for(mesh_r3=0;mesh_r3<10;mesh_r3++){
@@ -667,13 +774,12 @@ foreach ($result_good as $record_good) {
             
                     //クリックしたら情報を表示
                     const infoWindow = new google.maps.InfoWindow({
-	      	            content:"調査日:"+d.year+"年"+d.month+"月"+d.day+"日"+"<br>"+"状態:悪い"+"<br>"+"理由:"+d.reason+"<br>"+"<img src="+d.image+" height='150px'>"
+	      	            content:"調査日:"+d.year+"年"+d.month+"月"+d.day+"日"+"<br>"+"状態:悪い"+"<br>"+"理由:"+d.reason+"<br>"+"<img src="+d.image+">"
         	          });
           
 	                  google.maps.event.addListener(marker, 'click', function() { //マーカークリック時の動作
 	      	            infoWindow.open(map, marker); //情報ウィンドウを開く
         	          });
-
                   });
 
                   data2.map(d2 => {
@@ -686,6 +792,8 @@ foreach ($result_good as $record_good) {
                       scaledSize: new google.maps.Size(45, 45)
                     }
                   });
+;
+
 
                   //クリックしたら情報を表示
                   const infoWindow = new google.maps.InfoWindow({
